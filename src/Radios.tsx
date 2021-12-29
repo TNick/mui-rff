@@ -66,7 +66,7 @@ export function Radios(props: RadiosProps) {
 					<FormControlLabel
 						key={idx}
 						name={name}
-						label={item.label}
+						label={item.label as any}
 						value={item.value}
 						disabled={item.disabled}
 						control={

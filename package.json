@@ -27,8 +27,8 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "dts watch",
-    "build": "dts build",
+    "start": "dts watch --rollupTypes",
+    "build": "dts build --rollupTypes",
     "test": "dts test",
     "testw": "dts test --watch",
     "lint": "dts lint src test --ignore-pattern node_modules",

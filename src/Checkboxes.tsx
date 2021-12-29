@@ -68,7 +68,7 @@ export function Checkboxes(props: CheckboxesProps) {
 					<FormControlLabel
 						key={idx}
 						name={name}
-						label={item.label}
+						label={item.label as any}
 						value={single ? undefined : item.value}
 						disabled={item.disabled}
 						control={
