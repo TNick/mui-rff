@@ -4,8 +4,10 @@ import { Form } from 'react-final-form';
 
 import 'date-fns';
 
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { KeyboardTimePicker } from '../src';
-import { act, customRender } from './TestUtils';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { act, customRender } from '../src/test/TestUtils';
 
 interface ComponentProps {
 	initialValues: FormData;
@@ -41,7 +43,9 @@ describe('KeyboardTimePicker', () => {
 				validate={validate}
 				render={({ handleSubmit }) => (
 					<form onSubmit={handleSubmit} noValidate>
-						<KeyboardTimePicker label="Test" name="date" required={true} />
+						<LocalizationProvider dateAdapter={AdapterDateFns}>
+							<KeyboardTimePicker label="Test" name="date" required={true} />
+						</LocalizationProvider>
 					</form>
 				)}
 			/>

@@ -1,14 +1,13 @@
 import React from 'react';
 
-import { TimePicker as MuiTimePicker, TimePickerProps as MuiTimePickerProps } from '@mui/lab';
+import { TimePicker as MuiTimePicker, TimePickerProps as MuiTimePickerProps } from '@mui/x-date-pickers';
 
 import { Field, FieldProps, FieldRenderProps } from 'react-final-form';
 
 import { ShowErrorFunc, showErrorOnChange } from './Util';
 import { TextField } from '@mui/material';
-import pickerProviderWrapper from './PickerProvider';
 
-export interface TimePickerProps extends Partial<Omit<MuiTimePickerProps, 'onChange'>> {
+export interface TimePickerProps extends Partial<Omit<MuiTimePickerProps<any, any>, 'onChange'>> {
 	name: string;
 	locale?: any;
 	fieldProps?: Partial<FieldProps<any, any>>;
@@ -28,16 +27,14 @@ export function TimePicker(props: TimePickerProps) {
 	);
 }
 
-interface TimePickerWrapperProps extends FieldRenderProps<MuiTimePickerProps> {
+interface TimePickerWrapperProps extends FieldRenderProps<MuiTimePickerProps<any, any>> {
 	required?: boolean;
-	locale?: any;
 }
 
 function TimePickerWrapper(props: TimePickerWrapperProps) {
 	const {
 		input: { name, onChange, value, ...restInput },
 		meta,
-		locale,
 		showError = showErrorOnChange,
 		required,
 		...rest
@@ -48,23 +45,32 @@ function TimePickerWrapper(props: TimePickerWrapperProps) {
 
 	const { helperText, ...lessrest } = rest;
 
-	return pickerProviderWrapper(
+	return (
 		<MuiTimePicker
 			onChange={onChange}
 			value={(value as any) === '' ? null : value}
 			{...lessrest}
-			renderInput={(props) => (
+			renderInput={(inputProps) => (
 				<TextField
+					{...inputProps}
 					fullWidth={true}
 					helperText={isError ? error || submitError : helperText}
-					error={isError}
+					error={inputProps.error || isError}
 					name={name}
 					required={required}
-					{...restInput}
-					{...props}
+					inputProps={{
+						...inputProps.inputProps,
+						onBlur: (event) => {
+							inputProps.inputProps?.onBlur?.(event);
+							restInput.onBlur(event);
+						},
+						onFocus: (event) => {
+							inputProps.inputProps?.onFocus?.(event);
+							restInput.onFocus(event);
+						},
+					}}
 				/>
 			)}
-		/>,
-		locale,
+		/>
 	);
 }

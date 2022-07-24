@@ -18,17 +18,21 @@ One thing to note in the [demo](https://lookfirst.github.io/mui-rff/) is the abi
 
 If there is some customization that you require, I welcome issues to discuss things or even pr's!
 
-I've spent a lot of hours on this project, and we have a lot of downloads, but not a lot of stars. **Please ⭐ ⭐ star it ⭐ ⭐ and send it to your friends and coworkers.** This project will save everyone a lot of time, so I'd love to get the word out.
+I've spent a lot of hours on this project, and we have a lot of downloads, but not a lot of stars. 
+
+**Please ⭐ ⭐ star it ⭐ ⭐ and send it to your friends and coworkers.** 
+
+This project will save everyone a lot of time, so I'd love to get the word out.
 
 # Usage
 
 Beyond the normal react dependencies, you'll need:
 
-`yarn add mui-rff @material-ui/core @material-ui/pickers@3.x.x @material-ui/lab final-form react-final-form`
+`yarn add mui-rff @mui/material @mui/styles @mui/x-date-pickers final-form react-final-form`
 
 If you use the date/time pickers, you'll need:
 
-`yarn add @date-io/core@1.3.13 @date-io/date-fns@1.3.13 date-fns`
+`yarn add @date-io/core @date-io/date-fns date-fns`
 
 It is unfortunate that so many dependencies need to be installed right now. Pretty sure fixing this will require a lot of work to split everything into separate packages, which seems quite overkill for this project. If anyone would like to volunteer to find and implement a better build system, [I'd love the help](https://github.com/lookfirst/mui-rff/issues/142).
 
@@ -180,6 +184,26 @@ The default variant for `TextField`s changed from `standard` to `outlined` in MU
 
 `KeyboardDatePicker`, `KeyboardDateTimePicker` and `KeyboardTimePicker` are deprecated aliases for `DatePicker`, `DateTimePicker` and `TimePicker` respectively. Please make sure to update your code as soon as possible. We will be removing them in a future point release version that we have not decided upon yet (5.1, 5.2, etc...). 
 
+## From 5.0 to 5.2.0
+
+Previously, we wrapped your Date/Time components in a `<LocalizationProvider>` [MUI documentation](https://mui.com/components/date-picker/#requirements). This had the unfortunate effect of blocking upstream declarations of the component. This was reported in issue #634 and is now fixed. The solution is to wrap all of your Date/Time components like this (but do it for all of them, not just one at a time):
+
+```tsx
+<LocalizationProvider dateAdapter={AdapterDateFns}>
+    <DatePicker label="Test" name="date" required={true} inputFormat="yyyy-MM-dd" />
+</LocalizationProvider>
+```
+
+You might encounter this error if you do not do this:
+
+`Error: Can not find utils in context. It looks like you forgot to wrap your component in LocalizationProvider, or pass dateAdapter prop directly.`
+
+## From 5.2.0 to 5.3.0
+
+In their infinite wisdom, [MUI decided to move the DatePickers to another project](https://mui.com/x/react-date-pickers/migration-lab/). So, I've migrated the imports. Since you import mui-rff and not MUI directly, this shouldn't have an effect on you, but I'm going to note it here in the upgrade log.
+
+Please note, I tried to upgrade to React 18 and it broke all the tests. So that is something I'm going to have to investigate in the future ([or someone can help out with this](https://github.com/lookfirst/mui-rff/issues/714)).
+
 # Components
 
 All of the components should allow passing MUI configuration properties to them so that they can be easily customized. In the case of RFF and MUI components with deeply nested structures of multiple subcomponents, you can pass the properties in with sepecial top level properties. This is very hard to document fully without making a mess, so please refer to the source code and demos for examples.
@@ -280,53 +304,11 @@ import { MenuItem } from '@material-ui/core';
 </Select>
 ```
 
-## KeyboardDatePicker - [MUI Docs](https://material-ui-pickers.dev/getting-started/usage)
-
-> Note: You can forgo providing the `dateFunsUtils` so long as you have a [`MuiPickersUtilsProvider`](https://material-ui-pickers.dev/getting-started/installation) already present as a parent within the DOM.
-
-> Note: A locale can be passed by adding passing a `locale` prop. See [`localization`](https://material-ui-pickers.dev/localization/date-fns) in Material-UI pickers documentation for more information.
+## DatePicker - [MUI Docs](https://mui.com/x/react-date-pickers/date-picker/)
 
 You'll need to add dependencies:
 
-`yarn add @date-io/core@1.3.13 @date-io/date-fns@1.3.13 date-fns`
-
-```tsx
-import { KeyboardDatePicker } from 'mui-rff';
-
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-
-<KeyboardDatePicker label="Pick a date" name="date" required={true} dateFunsUtils={DateFnsUtils} />
-```
-
-## KeyboardDateTimePicker - [MUI Docs](https://material-ui-pickers.dev/getting-started/usage)
-
-> Note: You can forgo providing the `dateFunsUtils` so long as you have a [`MuiPickersUtilsProvider`](https://material-ui-pickers.dev/getting-started/installation) already present as a parent within the DOM.
-
-> Note: A locale can be passed by adding passing a `locale` prop. See [`localization`](https://material-ui-pickers.dev/localization/date-fns) in Material-UI pickers documentation for more information.
-
-You'll need to add dependencies:
-
-`yarn add @date-io/core@1.3.13 @date-io/date-fns@1.3.13 date-fns`
-
-```tsx
-import { KeyboardDateTimePicker } from 'mui-rff';
-
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-
-<KeyboardDateTimePicker label="Pick a date and time" name="keyboardDateTime" required={true} dateFunsUtils={DateFnsUtils} />
-```
-
-## DatePicker - [MUI Docs](https://material-ui-pickers.dev/getting-started/usage)
-
-> Note: You can forgo providing the `dateFunsUtils` so long as you have a [`MuiPickersUtilsProvider`](https://material-ui-pickers.dev/getting-started/installation) already present as a parent within the DOM.
-
-> Note: A locale can be passed by adding passing a `locale` prop. See [`localization`](https://material-ui-pickers.dev/localization/date-fns) in Material-UI pickers documentation for more information.
-
-You'll need to add dependencies:
-
-`yarn add @date-io/core@1.3.13 @date-io/date-fns@1.3.13 date-fns`
+`yarn add @mui/x-date-pickers @date-io/core @date-io/date-fns date-fns`
 
 ```tsx
 import { DatePicker } from 'mui-rff';
@@ -334,18 +316,14 @@ import { DatePicker } from 'mui-rff';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 
-<DatePicker label="Pick a date" name="date" required={true} dateFunsUtils={DateFnsUtils} />
+<DatePicker label="Pick a date" name="date" required={true} />
 ```
 
-## TimePicker - [MUI Docs](https://material-ui-pickers.dev/getting-started/usage)
-
-> Note: You can forgo providing the `dateFunsUtils` so long as you have a [`MuiPickersUtilsProvider`](https://material-ui-pickers.dev/getting-started/installation) already present as a parent within the DOM.
-
-> Note: A locale can be passed by adding passing a `locale` prop. See [`localization`](https://material-ui-pickers.dev/localization/date-fns) in Material-UI pickers documentation for more information.
+## TimePicker - [MUI Docs](https://mui.com/x/react-date-pickers/time-picker/)
 
 You'll need to add dependencies:
 
-`yarn add @date-io/core@1.3.13 @date-io/date-fns@1.3.13 date-fns`
+`yarn add @mui/x-date-pickers @date-io/core @date-io/date-fns date-fns`
 
 ```tsx
 import { TimePicker } from 'mui-rff';
@@ -353,18 +331,14 @@ import { TimePicker } from 'mui-rff';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 
-<TimePicker label="Pick a date" name="date" required={true} dateFunsUtils={DateFnsUtils} />
+<TimePicker label="Pick a date" name="date" required={true} />
 ```
 
-## DateTimePicker - [MUI Docs](https://material-ui-pickers.dev/getting-started/usage)
-
-> Note: You can forgo providing the `dateFunsUtils` so long as you have a [`MuiPickersUtilsProvider`](https://material-ui-pickers.dev/getting-started/installation) already present as a parent within the DOM.
-
-> Note: A locale can be passed by adding passing a `locale` prop. See [`localization`](https://material-ui-pickers.dev/localization/date-fns) in Material-UI pickers documentation for more information.
+## DateTimePicker - [MUI Docs](https://mui.com/x/react-date-pickers/date-time-picker/)
 
 You'll need to add dependencies:
 
-`yarn add @date-io/core@1.3.13 @date-io/date-fns@1.3.13 date-fns`
+`yarn add @mui/x-date-pickers @date-io/core @date-io/date-fns date-fns`
 
 ```tsx
 import { DateTimePicker } from 'mui-rff';
@@ -372,7 +346,7 @@ import { DateTimePicker } from 'mui-rff';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 
-<DateTimePicker label="Pick a date and time" name="datTtime" required={true} dateFunsUtils={DateFnsUtils} />
+<DateTimePicker label="Pick a date and time" name="datTtime" required={true} />
 ```
 
 ## Autocomplete - [MUI Docs](https://material-ui.com/components/autocomplete/)
@@ -603,7 +577,7 @@ Thanks to the awesome work by these projects:
 -   React Final Form
 -   Jest
 -   React Testing Library
--   DTS (replaces TSDX, RIP)
+-   DTS
 -   Typescript
 -   Yarn
 -   And all their dependencies...

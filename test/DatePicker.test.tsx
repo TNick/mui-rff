@@ -1,11 +1,15 @@
+import { Button } from '@mui/material';
 import React from 'react';
 
+import * as Yup from 'yup';
 import { Form } from 'react-final-form';
 
 import 'date-fns';
 
-import { DatePicker } from '../src';
-import { act, customRender } from './TestUtils';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker, makeValidate } from '../src';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { act, customRender, fireEvent } from '../src/test/TestUtils';
 
 interface ComponentProps {
 	initialValues: FormData;
@@ -13,7 +17,7 @@ interface ComponentProps {
 }
 
 interface FormData {
-	date: Date;
+	date: Date | null;
 }
 
 describe('DatePicker', () => {
@@ -40,9 +44,21 @@ describe('DatePicker', () => {
 				onSubmit={onSubmit}
 				initialValues={initialValues}
 				validate={validate}
-				render={({ handleSubmit }) => (
+				render={({ handleSubmit, submitting }) => (
 					<form onSubmit={handleSubmit} noValidate>
-						<DatePicker label="Test" name="date" required={true} inputFormat="yyyy-MM-dd" />
+						<LocalizationProvider dateAdapter={AdapterDateFns}>
+							<DatePicker label="Test" name="date" required={true} inputFormat="yyyy-MM-dd" />
+						</LocalizationProvider>
+
+						<Button
+							variant="contained"
+							color="primary"
+							type="submit"
+							disabled={submitting}
+							data-testid="submit"
+						>
+							Submit
+						</Button>
 					</form>
 				)}
 			/>
@@ -77,5 +93,23 @@ describe('DatePicker', () => {
 			expect(elem.tagName).toBe('SPAN');
 			expect(elem.innerHTML).toBe(' *');
 		});
+	});
+
+	it('turns red if empty and required', async () => {
+		const validateSchema = makeValidate(
+			Yup.object().shape({
+				date: Yup.date().required(),
+			}),
+		);
+
+		const rendered = customRender(
+			<DatePickerComponent initialValues={{ date: null }} validator={validateSchema} />,
+		);
+
+		const submit = await rendered.findByTestId('submit');
+		fireEvent.click(submit);
+
+		//const elem = (await findByText('Test')) as HTMLLegendElement;
+		expect(rendered).toMatchSnapshot();
 	});
 });

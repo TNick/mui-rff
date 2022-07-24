@@ -42,6 +42,8 @@ import { styled } from '@mui/system';
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import ruLocale from 'date-fns/locale/ru';
 
 const theme = createTheme({
@@ -179,7 +181,7 @@ function App() {
 	);
 }
 
-const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+const Offset = styled('div')(({ theme }) => (theme.mixins as any).toolbar);
 
 function Footer() {
 	return (
@@ -417,27 +419,14 @@ function MainForm({ subscription }: { subscription: any }) {
 			data={radioData}
 			helperText={helperText}
 		/>,
-		<DatePicker
-			key={key++}
-			label="Birthday"
-			name="birthday"
-			required={required.birthday}
-			helperText={helperText}
-		/>,
-		<TimePicker key={key++} label="Break time" name="break" required={required.break} helperText={helperText} />,
-		<DateTimePicker
-			key={key++}
-			label="Pick a date and time"
-			name="dateTime"
-			required={required.dateTime}
-			helperText={helperText}
-		/>,
+		<DatePicker key={key++} label="Birthday" name="birthday" required={required.birthday} />,
+		<TimePicker key={key++} label="Break time" name="break" required={required.break} />,
+		<DateTimePicker key={key++} label="Pick a date and time" name="dateTime" required={required.dateTime} />,
 		<DateTimePicker
 			key={key++}
 			label="Pick a date and time (russian locale)"
 			name="dateTimeLocale"
 			required={required.dateTimeLocale}
-			helperText={helperText}
 			locale={ruLocale}
 		/>,
 		<TextField key={key++} label="Hello world" name="hello" required={required.hello} helperText={helperText} />,
@@ -493,11 +482,13 @@ function MainForm({ subscription }: { subscription: any }) {
 					<form onSubmit={handleSubmit} noValidate={true} autoComplete="new-password">
 						<Grid container>
 							<Grid item xs={6}>
-								{formFields.map((field, index) => (
-									<Grid item key={index}>
-										{field}
-									</Grid>
-								))}
+								<LocalizationProvider dateAdapter={AdapterDateFns}>
+									{formFields.map((field, index) => (
+										<Grid item key={index}>
+											{field}
+										</Grid>
+									))}
+								</LocalizationProvider>
 								<Grid item>
 									<Button
 										type="button"
